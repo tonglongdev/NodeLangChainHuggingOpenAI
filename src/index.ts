@@ -7,24 +7,24 @@ const client = new OpenAI();
 // });
 
 const prompt = "How big is the moon? Limit your response in 100 words or less.";
-const sysOpt = "";
+const sysOpt = "Start with greetings";
 const main = async () => {
   const response = await client.responses.create({
     model: "gpt-5-nano",
     input: [
-      // {
-      //   role: "system",
-      //   content: sysOpt,
-      // },
+      {
+        role: "system",
+        content: sysOpt,
+      },
       {
         role: "user",
         content: prompt,
       },
     ],
-    //   max_tokens: 60,
-    //   n: 2,
-    //   frequency_penalty: 1.5,
-    //   seed: 88888,
+    max_tokens: 60,
+    n: 2,
+    frequency_penalty: 1.5,
+    seed: 88888,
   });
 };
 
