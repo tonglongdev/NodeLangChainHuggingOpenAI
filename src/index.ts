@@ -6,37 +6,43 @@ const client = new OpenAI();
 //   apiKey: process.env.OPENAI_API_KEY,
 // });
 
-const prompt = "How big is the moon? Limit your response in 100 words or less.";
-const sysOpt = "Start with greetings";
-const main = async () => {
+const context: OpenAI.Responses.ResponseInput = [
+  {
+    role: "system",
+    content: "Limit response in 10 words or less",
+  },
+];
+
+const createChat = async () => {
   const response = await client.responses.create({
     model: "gpt-5-nano",
-    input: [
-      {
-        role: "system",
-        content: sysOpt,
-      },
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    max_tokens: 60,
-    n: 2,
-    frequency_penalty: 1.5,
-    seed: 88888,
+    input: context,
   });
+  const responseMessage = response.output[1] || {
+    role: "assistant",
+    content: "No response",
+  };
+  context.push(responseMessage);
 };
 
-const encodePrompt = (prompt: string) => {
-  // create an encoder for the model
-  const encoder = encoding_for_model("gpt-5-nano");
-  // encode the prompt
-  const tokens = encoder.encode(prompt);
-  console.log(tokens);
-};
+// process.stdin.addListener is used to read user input from the command line
+process.stdin.on("data", async (input) => {
+  const userInput = input.toString().trim();
+  context.push({
+    role: "user",
+    content: userInput,
+  });
+  await createChat();
+});
 
-encodePrompt("How big is the moon?");
+// const encodePrompt = (prompt: string) => {
+//   // create an encoder for the model
+//   const encoder = encoding_for_model("gpt-5-nano");
+//   // encode the prompt
+//   const tokens = encoder.encode(prompt);
+//   console.log(tokens);
+// };
 
+// encodePrompt("How big is the moon?");
 // console.log(main());
 // console.log(response.output[0].content[0].text)
