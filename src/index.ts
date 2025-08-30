@@ -1,4 +1,5 @@
 import { OpenAI } from "openai";
+import { encoding_for_model } from "tiktoken";
 
 const client = new OpenAI();
 // const client = new OpenAI({
@@ -27,5 +28,15 @@ const main = async () => {
   });
 };
 
-console.log(main());
+const encodePrompt = (prompt: string) => {
+  // create an encoder for the model
+  const encoder = encoding_for_model("gpt-5-nano");
+  // encode the prompt
+  const tokens = encoder.encode(prompt);
+  console.log(tokens);
+};
+
+encodePrompt("How big is the moon?");
+
+// console.log(main());
 // console.log(response.output[0].content[0].text)
