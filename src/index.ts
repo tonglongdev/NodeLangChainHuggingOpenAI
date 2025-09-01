@@ -1,12 +1,8 @@
 import { OpenAI } from "openai";
-import { encoding_for_model } from "tiktoken";
 
-const client = new OpenAI();
-// const client = new OpenAI({
-//   apiKey: process.env.OPENAI_API_KEY,
-// });
+const openai = new OpenAI();
 
-const context: OpenAI.Responses.ResponseInput = [
+const context: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
   {
     role: "system",
     content: "Limit response in 10 words or less",
@@ -14,19 +10,17 @@ const context: OpenAI.Responses.ResponseInput = [
 ];
 
 const createChat = async () => {
-  const response = await client.responses.create({
+  const response = await openai.chat.completions.create({
     model: "gpt-5-nano",
-    input: context,
+    messages: context,
   });
-  const responseMessage = response.output[1] || {
-    role: "assistant",
-    content: "No response",
-  };
+  const responseMessage = response.choices[0].message;
   context.push(responseMessage);
+  console.log(response.choices[0].message.content);
 };
 
 // process.stdin.addListener is used to read user input from the command line
-process.stdin.on("data", async (input) => {
+process.stdin.addListener("data", async (input) => {
   const userInput = input.toString().trim();
   context.push({
     role: "user",
@@ -34,15 +28,3 @@ process.stdin.on("data", async (input) => {
   });
   await createChat();
 });
-
-// const encodePrompt = (prompt: string) => {
-//   // create an encoder for the model
-//   const encoder = encoding_for_model("gpt-5-nano");
-//   // encode the prompt
-//   const tokens = encoder.encode(prompt);
-//   console.log(tokens);
-// };
-
-// encodePrompt("How big is the moon?");
-// console.log(main());
-// console.log(response.output[0].content[0].text)
