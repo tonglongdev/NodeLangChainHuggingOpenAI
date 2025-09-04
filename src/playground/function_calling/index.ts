@@ -104,4 +104,3 @@ const callOpenAIWithFunctionCalling = async () => {
   );
 };
 callOpenAIWithFunctionCalling();
-// 03:55:00
