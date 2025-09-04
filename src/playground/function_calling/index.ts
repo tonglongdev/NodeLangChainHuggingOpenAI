@@ -6,6 +6,15 @@ const getCurrentTimeAndDate = () => {
   return new Date().toString();
 };
 
+const getTaskStatus = (taskId: string) => {
+  console.log("Getting task status for task id:", taskId);
+  if (parseInt(taskId) % 2 === 0) {
+    return "Task is completed";
+  } else {
+    return "Task is pending";
+  }
+};
+
 const callOpenAIWithFunctionCalling = async () => {
   const context: OpenAI.Chat.ChatCompletionMessageParam[] = [
     {
@@ -29,6 +38,23 @@ const callOpenAIWithFunctionCalling = async () => {
           description: "Get the current time and date",
         },
       },
+      {
+        type: "function",
+        function: {
+          name: "getTaskStatus",
+          description: "Get the status of a task",
+          parameters: {
+            type: "object",
+            properties: {
+              taskId: {
+                type: "string",
+                description: "The task ID",
+              },
+            },
+            required: ["taskId"],
+          },
+        },
+      },
     ],
     tool_choice: "auto", // openai will decide which tool to use
   });
@@ -48,6 +74,17 @@ const callOpenAIWithFunctionCalling = async () => {
       if (functionName === "getCurrentTimeAndDate") {
         const functionResponse = getCurrentTimeAndDate();
 
+        context.push(response.choices[0].message);
+        context.push({
+          role: "tool",
+          content: functionResponse,
+          tool_call_id: toolCall.id,
+        });
+      } else if (functionName === "getTaskStatus") {
+        // extract parameters from tool call
+        const argRaw = toolCall.function.arguments;
+        const parsedArgs = JSON.parse(argRaw);
+        const functionResponse = getTaskStatus(parsedArgs.taskId);
         context.push(response.choices[0].message);
         context.push({
           role: "tool",
