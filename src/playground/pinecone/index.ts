@@ -66,22 +66,22 @@ const createIndex = async () => {
   });
 };
 
-// const queryVectors = async () => {
-//   const index = getIndex("bgwebagency-chat-app-index");
-//   const results = await index.query({
-//     id: "id-2",
-//     // how many query results to return
-//     topK: 1,
-//     includeMetadata: true,
-//   });
-//   console.log(results);
-// };
+const queryVectors = async () => {
+  const index = getIndex("chat-app-index");
+  const results = await index.query({
+    id: "id-2",
+    // how many query results to return
+    topK: 1,
+    includeMetadata: true,
+  });
+  console.log(results);
+};
 
 const main = async () => {
   // await listIndexes();
   // getIndex("chat-app-index");
-  await upsertVectors();
-  // await queryVectors();
+  // await upsertVectors();
+  await queryVectors();
 };
 
 main();
