@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "chromadb": "^3.0.15",
     "openai": "^5.16.0",
     "tiktoken": "^1.0.22"
   },
